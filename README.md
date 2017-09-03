@@ -17,6 +17,13 @@ Package API:
 Usage example:
 Populate configuration object with your registry details:
 ```
+import(
+rm "github.com/mangirdaz/regman"
+containers "github.com/mangirdaz/regman/containers"
+)
+
+config:= containers.Config{}
+
 type Config struct {
 	SourceRegistry              RegistryConfig
 	DestinationRegistry         RegistryConfig
@@ -31,7 +38,7 @@ type Config struct {
 
 Iniciate new method:
 ```
-rm: = regman.NewInstance(c Config)
+rm: = containers.NewInstance(c Config)
 ```
 
 Call copy method with image:
