@@ -3,24 +3,22 @@ package rm
 import (
 	"fmt"
 	"os"
-	"strings"
+	"regexp"
 
 	"github.com/containers/image/copy"
 	"github.com/containers/image/transports/alltransports"
 	log "github.com/sirupsen/logrus"
 )
 
-//TODO: add channel for concurant copies
-
 // Copy function will copy image as per src and dst registry configuration
-func (a RegMan) Copy(img string) error {
+func (a RegMan) Copy(imgSrc, imgDst string) error {
 
-	sourceURL, err := getRegistryURL(a.Config.SourceRegistry.Type, a.Config.SourceRegistry.URL, img)
+	sourceURL, err := getRegistryURL(a.Config.SourceRegistry.Type, a.Config.SourceRegistry.URL, imgSrc)
 	if err != nil {
 		log.Error(err)
 	}
 
-	destinationURL, err := getRegistryURL(a.Config.DestinationRegistry.Type, a.Config.DestinationRegistry.URL, getDestinationImage(img, a.Config.NamespaceMap))
+	destinationURL, err := getRegistryURL(a.Config.DestinationRegistry.Type, a.Config.DestinationRegistry.URL, imgDst)
 
 	srcRef, err := alltransports.ParseImageName(sourceURL)
 	if err != nil {
@@ -49,24 +47,10 @@ func (a RegMan) Copy(img string) error {
 	return err
 }
 
-func getDestinationImage(image string, namespaceMap []NamespaceMap) string {
-	//TODO: add logic if image does not have namespace (library tipe)
-	imageRaw := strings.Split(image, "/")
-	imageNew := fmt.Sprintf("%s/%s", getMapNamespace(imageRaw[0], namespaceMap), imageRaw[1])
-	return imageNew
-}
-
-func getMapNamespace(source string, namespaceMap []NamespaceMap) string {
-	//TODO add check if namespaces exist
-	for _, element := range namespaceMap {
-		if element.Source == source {
-			return element.Destination
-		}
-	}
-	return source
-}
-
 func getRegistryURL(regtype, url, image string) (string, error) {
 	//TODO: add type, url, image validation
-	return fmt.Sprintf("%s://%s/%s", regtype, url, image), nil
+	var re = regexp.MustCompile("https|http")
+	s := re.ReplaceAllString(url, "")
+	log.Debug(s)
+	return fmt.Sprintf("%s%s/%s", regtype, s, image), nil
 }
