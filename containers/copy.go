@@ -3,13 +3,12 @@ package rm
 import (
 	"fmt"
 	"os"
+	"regexp"
 
 	"github.com/containers/image/copy"
 	"github.com/containers/image/transports/alltransports"
 	log "github.com/sirupsen/logrus"
 )
-
-//TODO: add channel for concurant copies
 
 // Copy function will copy image as per src and dst registry configuration
 func (a RegMan) Copy(imgSrc, imgDst string) error {
@@ -48,22 +47,10 @@ func (a RegMan) Copy(imgSrc, imgDst string) error {
 	return err
 }
 
-// GetImages - returns images in src registry namespace
-func GetImages(namespace string) (string, error) {
-	return "", nil
-}
-
-// GetTags - return tags of particular image
-func GetTags(namespace, image string) (string, error) {
-	return "", nil
-}
-
-// GetDigest - return unique ID/DIGEST of the image
-func GetDigest(namespace string) (string, error) {
-	return "", nil
-}
-
 func getRegistryURL(regtype, url, image string) (string, error) {
 	//TODO: add type, url, image validation
-	return fmt.Sprintf("%s://%s/%s", regtype, url, image), nil
+	var re = regexp.MustCompile("https|http")
+	s := re.ReplaceAllString(url, "")
+	log.Debug(s)
+	return fmt.Sprintf("%s%s/%s", regtype, s, image), nil
 }

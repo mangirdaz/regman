@@ -3,6 +3,12 @@ package rm
 import (
 	"github.com/containers/image/signature"
 	"github.com/containers/image/types"
+	"github.com/mangirdaz/regman/registry"
+)
+
+const (
+	dockerRegistryAPI  = "https://registry-1.docker.io"
+	dockerRegistryName = "docker.io"
 )
 
 // RegistryConfig struct contains registry configuration and type
@@ -34,8 +40,9 @@ type Config struct {
 
 // RegMan - Registry Manager structure with private objects
 type RegMan struct {
-	Config Config
-	srcCtx *types.SystemContext
-	dstCtx *types.SystemContext
-	policy *signature.PolicyContext
+	Config   Config
+	srcCtx   *types.SystemContext
+	dstCtx   *types.SystemContext
+	policy   *signature.PolicyContext
+	registry *registry.Registry
 }

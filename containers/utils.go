@@ -3,6 +3,7 @@ package rm
 import (
 	"github.com/containers/image/signature"
 	"github.com/containers/image/types"
+	"github.com/mangirdaz/regman/registry"
 	log "github.com/sirupsen/logrus"
 )
 
@@ -53,11 +54,17 @@ func NewInstance(c Config) RegMan {
 	}
 	//defer policyContext.Destroy()
 
+	registry, err := registry.New(c.SourceRegistry.URL, c.SourceRegistry.Username, c.SourceRegistry.Password)
+	if err != nil {
+		log.Error(err)
+	}
+
 	regman := RegMan{
-		Config: c,
-		srcCtx: srcCtx,
-		dstCtx: dstCtx,
-		policy: policyContext,
+		Config:   c,
+		srcCtx:   srcCtx,
+		dstCtx:   dstCtx,
+		policy:   policyContext,
+		registry: registry,
 	}
 
 	return regman
